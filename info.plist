@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>ch.ra-phi.alfred.networklocationchooser</string>
+	<key>connections</key>
+	<dict>
+		<key>5E6B3B57-90E9-40E8-8B6C-F70C7E28AB5C</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D88A4647-D614-4F7F-B351-B19A91ED0D5D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>D88A4647-D614-4F7F-B351-B19A91ED0D5D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>E863B917-4E60-4DDE-9DBB-4A8A61DE545D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>raφ</string>
+	<key>description</key>
+	<string></string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Network Location Chooser</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>keyword</key>
+				<string>ntloc</string>
+				<key>script</key>
+				<string>#!/usr/bin/env python
+
+from subprocess import check_output
+import xml.etree.ElementTree as ET
+import re
+
+set_pattern = re.compile(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\s*\((.*)\)', re.IGNORECASE)
+
+out = check_output("scselect", universal_newlines=True)
+sets = out.splitlines()[1:]
+
+root = ET.Element('items')
+
+for network_set in sets:
+    network_set = set_pattern.search(network_set)
+    if not network_set:
+        continue
+    name = network_set.group(2)
+    uuid = network_set.group(1)
+    item = ET.SubElement(root, 'item')
+    item.attrib["uid"] = uuid
+    item.attrib["arg"] = uuid
+    ET.SubElement(item, "title").text = name
+    ET.SubElement(item, "icon").text = "icon.png"
+
+print '&lt;?xml version="1.0"?&gt;'
+print ET.tostring(root)
+</string>
+				<key>subtext</key>
+				<string>Choose a Network Location</string>
+				<key>title</key>
+				<string>Network Location</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>5E6B3B57-90E9-40E8-8B6C-F70C7E28AB5C</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>script</key>
+				<string>scselect "{query}"</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>D88A4647-D614-4F7F-B351-B19A91ED0D5D</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Network Location Updated</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>E863B917-4E60-4DDE-9DBB-4A8A61DE545D</string>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Icons copyright 2009 by the iconfactory</string>
+	<key>uidata</key>
+	<dict>
+		<key>5E6B3B57-90E9-40E8-8B6C-F70C7E28AB5C</key>
+		<dict>
+			<key>ypos</key>
+			<real>80</real>
+		</dict>
+		<key>D88A4647-D614-4F7F-B351-B19A91ED0D5D</key>
+		<dict>
+			<key>ypos</key>
+			<real>80</real>
+		</dict>
+		<key>E863B917-4E60-4DDE-9DBB-4A8A61DE545D</key>
+		<dict>
+			<key>ypos</key>
+			<real>80</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>http://www.ra-phi.ch</string>
+</dict>
+</plist>
